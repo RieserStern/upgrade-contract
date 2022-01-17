@@ -5,6 +5,11 @@ import "./Box.sol";
 
 contract BoxV2 is Box {
     uint256 public y;
+    uint public ownerPrice;
+
+    function setOwnerPrice(uint _price) external {
+        ownerPrice = _price;
+    }
 
     function increment() external {
         x += 1;
