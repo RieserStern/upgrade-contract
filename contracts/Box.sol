@@ -9,11 +9,11 @@ contract Box {
         price = _price;
     }
 
-    function store(uint256 _x) external {
-        x = _x;
-    }
+    // function store(uint256 _x) external {
+    //     x = _x;
+    // }
 
-    function retrieve() external view returns(uint256) {
-        return x;
-    }
+    // function retrieve() external view returns(uint256) {
+    //     return x;
+    // }
 }
