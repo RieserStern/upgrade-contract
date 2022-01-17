@@ -9,10 +9,6 @@ contract BoxV2 is Box {
     uint256 public y;
     uint public ownerPrice;
 
-    constructor() {
-        _owner = msg.sender;
-    }
-
     modifier onlyOwner() {
         require(isOwner());
         _;
