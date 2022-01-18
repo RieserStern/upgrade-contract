@@ -10,7 +10,7 @@ import "./DateTimeHandle.sol";
 import "./AVGInterface.sol";
 
 /**
-  *  @author Rieser
+  *  @author Rieser Stern
   *  @dev Contract for calculate the AVGPrice token
  */
 contract AvgPriceV1 is AVGInterface, Ownable, Pausable, DateTimeHandle {

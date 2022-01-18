@@ -1,62 +1,82 @@
-import { ethers, upgrades } from "hardhat";
 import { expect } from "chai";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { ethers } from "hardhat";
 
-describe("Test upgrade", () => {
-    let proxyAddress: string;
-    // let signer: SignerWithAddress;
+describe("DefiAVGPrice", function () {
+  it("DefiAVGPrice", async function () {
+    const DefiAVGPrice = await ethers.getContractFactory("DefiAVGPrice");
+    const defiAVGPrice = await DefiAVGPrice.deploy();
+    await defiAVGPrice.deployed();
 
-    it("test Box v1", async () => {
-        // deploy Box v1
-        const Box = await ethers.getContractFactory("BoxV1");
-        const box = await upgrades.deployProxy(Box, [42], { initializer: "setPrice"});
-        await box.deployed();
-        proxyAddress = box.address;
-        // [signer] = await ethers.getSigners();
+    const setPriceTx = await defiAVGPrice.setPrice(20);
 
-        // const boxV1Abi = [
-        //     "function store(uint256)",
-        //     "function retrieve() external view returns(uint256)"
-        // ]
+    // wait until the transaction is mined
+    await setPriceTx.wait();
 
-        // const boxV1Abi = [
-        //     "function setPrice(uint _price)"
-        // ]
+    // setCurrent Timestamp
+    expect(await defiAVGPrice.getPrice(1640626812)).to.equal(20);
+  });
 
-        // const v1Instance = new ethers.Contract(proxyAddress, boxV1Abi, signer)
-        // expect(await v1Instance.callStatic.retrieve()).to.eq(42);
-        // await v1Instance.functions.setPrice(11);
-        // expect(await v1Instance.callStatic.retrieve()).to.eq(11);
-    })
+  it("DefiAVGPriceV2", async function () {
+    const DefiAVGPriceV2 = await ethers.getContractFactory("DefiAVGPriceV2");
+    const defiAVGPriceV2 = await DefiAVGPriceV2.deploy();
+    await defiAVGPriceV2.deployed();
 
-    it("test Box v2", async () => {
-        // deploy Box v2
-        const BoxV2 = await ethers.getContractFactory("BoxV2");
-        const boxV2 = await upgrades.upgradeProxy(proxyAddress, BoxV2);
-        await boxV2.deployed();
-        // const boxV2Abi = [
-        //     // v1
-        //     "function store(uint256)",
-        //     "function retrieve() external view returns(uint256)",
-        //     // v2
-        //     "function increment()",
-        //     "function getY() returns(uint256)",
-        //     "function setY(uint256)"
-        // ]
-        // const boxV2Abi = [
-        //     // v1
-        //     "function setPrice(uint _price)",
-        //     // v2
-        //     "function setOwnerPrice(uint _price)",
-        // ]
+    const setPriceTxV2 = await defiAVGPriceV2.setPrice(20);
 
-        // const v2Instance = new ethers.Contract(proxyAddress, boxV2Abi, signer)
-        // expect(await v2Instance.callStatic.retrieve()).to.eq(11);
-        // await v2Instance.functions.setOwnerPrice(12);
-        // expect(await v2Instance.callStatic.retrieve()).to.eq(12);
-        // await v2Instance.functions.increment();
-        // expect(await v2Instance.callStatic.retrieve()).to.eq(13);
-        // await v2Instance.functions.setY(21)
-        // expect(await v2Instance.callStatic.getY()).to.eq(21);
-    })
-})
+    // wait until the transaction is mined
+    await setPriceTxV2.wait();
+
+    // setCurrent Timestamp
+    expect(await defiAVGPriceV2.getPrice(1640626812)).to.equal(20);
+  });
+
+  it("DefiAVGPriceV3", async function () {
+    const DefiAVGPriceV3 = await ethers.getContractFactory("DefiAVGPriceV3");
+    const defiAVGPriceV3 = await DefiAVGPriceV3.deploy();
+    await defiAVGPriceV3.deployed();
+
+    const setPriceTxV3 = await defiAVGPriceV3.setPrice(20);
+
+    // wait until the transaction is mined
+    await setPriceTxV3.wait();
+
+    // setCurrent Timestamp
+    expect(await defiAVGPriceV3.getPrice(1640626812)).to.equal(20);
+  });
+
+  it("After Upgrade DefiAVGPriceV2", async function () {
+    const DefiAVGPrice = await ethers.getContractFactory("DefiAVGPrice");
+    const DefiAVGPriceV2 = await ethers.getContractFactory("DefiAVGPriceV2");
+    const DefiAVGPriceV3 = await ethers.getContractFactory("DefiAVGPriceV3");
+
+    const Resolver = await ethers.getContractFactory("Resolver");
+    const defiAVGPrice = await DefiAVGPrice.deploy();
+    const defiAVGPriceV2 = await DefiAVGPriceV2.deploy();
+    const defiAVGPriceV3 = await DefiAVGPriceV3.deploy();
+    const resolver = await Resolver.deploy();
+
+    await defiAVGPrice.deployed();
+    await defiAVGPriceV2.deployed();
+    await defiAVGPriceV3.deployed();
+    await resolver.deployed();
+
+    const EtherRouter = await ethers.getContractAt("EtherRouter", resolver.address);
+    const etherRouter = await EtherRouter.deploy();
+    await etherRouter.deployed();
+    const DelegationContract = await ethers.getContractAt("DefiAVGInterface", etherRouter.address);
+    const delegationContract = await DelegationContract.deploy();
+    await delegationContract.deployed();
+
+
+    await resolver.Register("setPrice(uint256)", defiAVGPrice.address, 0);
+    await resolver.Register("setPrice(uint256)", defiAVGPriceV2.address, 0);
+    await resolver.Register("setPrice(uint256)", defiAVGPriceV3.address, 0);
+    const setPriceTx = await delegationContract.setPrice(20);
+
+    // wait until the transaction is mined
+    await setPriceTx.wait();
+
+    // setCurrent Timestamp
+    expect(await delegationContract.getPrice(1640626812)).to.equal(20);
+  });
+});
