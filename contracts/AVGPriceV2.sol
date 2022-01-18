@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Box.sol";
+import "./AVGPriceV1.sol";
 
-contract BoxV2 is Box {
+contract AVGPriceV2 is AvgPriceV1 {
     address private _owner;
 
     uint256 public y;
@@ -21,16 +21,4 @@ contract BoxV2 is Box {
     function setOwnerPrice(uint _price) external onlyOwner  {
         ownerPrice = _price;
     }
-
-    // function increment() external {
-    //     x += 1;
-    // }
-
-    // function setY(uint256 _y) external {
-    //     y = _y;
-    // }
-
-    // function getY() external view returns(uint256) {
-    //     return y;
-    // }
 }
