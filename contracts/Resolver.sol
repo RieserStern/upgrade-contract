@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// SPDX-License-Identifier: Unlicensed
+import "hardhat/console.sol";
 
 contract Resolver {
     struct Pointer {
