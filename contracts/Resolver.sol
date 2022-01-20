@@ -39,7 +39,7 @@ contract Resolver {
         if (address(replacement) != address(0)) {
             return replacement.lookup(sig, msgData);
         } // If Resolver has been replaced, pass call to replacement
-
+ 
         return (destination(sig), outsize(sig));
     }
 
